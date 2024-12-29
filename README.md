@@ -1,4 +1,4 @@
-## Bisect module for Go
+## Bisection algorithms module for Go
 #### [Inspired by CPython bisect](https://github.com/python/cpython/blob/main/Lib/bisect.py)
 
 #### Installation

@@ -1,3 +1,7 @@
+/*
+Bisection algorithms
+*/
+
 package bisect
 
 import (

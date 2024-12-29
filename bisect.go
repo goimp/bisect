@@ -8,7 +8,11 @@ import (
 // It should return a negative value if a < b, 0 if a == b, and a positive value if a > b.
 type Comparator[T any] func(a, b T) int
 
-// InsortRight inserts an item x into a sorted slice a, keeping it sorted.
+// Insert item x in list a, and keep it sorted assuming a is sorted.
+// If x is already in a, insert it to the right of the rightmost x.
+// Optional args lo (default 0) and hi (default len(a)) bound the
+// slice of a to be searched.
+// A comparator function should be supplied to customize the sort order.
 func InsortRight[T any](a *[]T, x T, lo, hi int, compare Comparator[T]) {
 	slice := *a
 	lo = BisectRight(*a, x, lo, hi, compare)
@@ -16,9 +20,13 @@ func InsortRight[T any](a *[]T, x T, lo, hi int, compare Comparator[T]) {
 	*a = append(slice[:lo], append([]T{x}, slice[lo:]...)...)
 }
 
-// BisectRight returns the index where to insert item x in a sorted slice a,
-// assuming the slice is sorted. The returned index ensures that all elements
-// in a[:i] are <= x, and all elements in a[i:] are > x.
+// Return the index where to insert item x in list a, assuming a is sorted.
+// The return value i is such that all e in a[:i] have e <= x, and all e in
+// a[i:] have e > x.  So if x already appears in the list, a.insert(i, x) will
+// insert just after the rightmost x already there.
+// Optional args lo (default 0) and hi (default len(a)) bound the
+// slice of a to be searched.
+// A comparator function should be supplied to customize the sort order.
 func BisectRight[T any](a []T, x T, lo int, hi int, compare Comparator[T]) int {
 	if lo < 0 {
 		panic("lo must be non-negative")
@@ -42,16 +50,24 @@ func BisectRight[T any](a []T, x T, lo int, hi int, compare Comparator[T]) int {
 	return lo
 }
 
-// InsortLeft inserts an item x into a sorted slice a, keeping it sorted.
-// If x is already in a, it inserts it before the leftmost x.
+// Insert item x in list a, and keep it sorted assuming a is sorted.
+// If x is already in a, insert it to the left of the leftmost x.
+// Optional args lo (default 0) and hi (default len(a)) bound the
+// slice of a to be searched.
+// A comparator function should be supplied to customize the sort order.
 func InsortLeft[T any](a *[]T, x T, lo, hi int, compare Comparator[T]) {
 	slice := *a
 	lo = BisectLeft(*a, x, lo, hi, compare)                   // Find the insertion index
 	*a = append(slice[:lo], append([]T{x}, slice[lo:]...)...) // Insert at the correct position
 }
 
-// BisectLeft returns the index where to insert item x in sorted slice a,
-// assuming a is sorted. All elements in a[:i] are < x, and all elements in a[i:] are >= x.
+// Return the index where to insert item x in list a, assuming a is sorted.
+// The return value i is such that all e in a[:i] have e < x, and all e in
+// a[i:] have e >= x.  So if x already appears in the list, a.insert(i, x) will
+// insert just before the leftmost x already there.
+// Optional args lo (default 0) and hi (default len(a)) bound the
+// slice of a to be searched.
+// A comparator function should be supplied to customize the sort order.
 func BisectLeft[T any](a []T, x T, lo int, hi int, compare Comparator[T]) int {
 	if lo < 0 {
 		panic("lo must be non-negative")
@@ -72,11 +88,12 @@ func BisectLeft[T any](a []T, x T, lo int, hi int, compare Comparator[T]) int {
 	return lo
 }
 
-// Global aliases using wrapper functions
+// Global alias to BisectRight using wrapper functions
 func Bisect[T any](a []T, x T, lo int, hi int, compare Comparator[T]) int {
 	return BisectRight(a, x, lo, hi, compare)
 }
 
+// Global alias to InsortRight using wrapper functions
 func Insort[T any](a *[]T, x T, lo, hi int, compare Comparator[T]) {
 	InsortRight(a, x, lo, hi, compare)
 }
